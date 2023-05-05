@@ -9,15 +9,17 @@ import { SettingsService } from '../../services/settings.service';
 })
 export class AccountSettingsComponent implements OnInit {
 
-  constructor(private settingsService: SettingsService) { }
+  constructor(
+    private _settingsService: SettingsService
+  ) { }
 
   ngOnInit(): void {
-    this.settingsService.checkCurrentTheme();
+    this._settingsService.checkCurrentTheme();
   }
 
   changeTheme(theme: string) {
 
-    this.settingsService.changeTheme(theme);
+    this._settingsService.changeTheme(theme);
   }
 
 }
