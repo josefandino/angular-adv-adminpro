@@ -24,7 +24,7 @@ export class PromesasComponent {
     //   console.log('Algo salio mal en la Promesa', error);
     // });
     this.getUsuarios().then((usuarios) => {
-      console.log(usuarios);
+      // console.log(usuarios);
     });
 
   }
