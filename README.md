@@ -1,6 +1,9 @@
 # Adminpro
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.1.9.
+  https://github.com/josefandino/angular-adv-adminpro
+  npm install --save --legacy-peer-deps
+
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15
 
 ## Development server
 
