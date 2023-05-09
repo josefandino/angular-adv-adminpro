@@ -1,11 +1,11 @@
-.login{width:100%;height:auto;
+.register{width:100%;height:auto;
   min-height: 100vh;
   background: #000;
   background: linear-gradient(to top, #1f98a8, #01324e);
   padding: 2rem 1rem;
 }
   
-.boxLogin{width:100%;height:auto;
+.boxRegister{width:100%;height:auto;
   max-width: 400px;
   position: relative;
   margin: 0 auto;

@@ -1,4 +1,4 @@
-export interface RegisterI {
+export interface RegisterForm {
   nombre: string,
   apellidos: string,
   email: string,

@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { RegisterI as RegisterForm } from '../interfaces/register.interface';
+import { RegisterForm as RegisterForm } from '../interfaces/register.interface';
 import { environment } from 'src/environments/environment';
 import { catchError, tap } from 'rxjs/operators';
+import { loginForm } from '../interfaces/login.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,7 @@ import { catchError, tap } from 'rxjs/operators';
 export class AuthService {
 
   private _grabarUsuario: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  private _loginUsuario: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   private base_url: string = environment.base_url;
 
   constructor(
@@ -18,6 +20,7 @@ export class AuthService {
   ) { }
 
   get grabarUsuario$(): Observable<any> { return this._grabarUsuario.asObservable() }
+  get loginUsuario$(): Observable<any> { return this._loginUsuario.asObservable() }
 
   grabarUsuario(usuario: RegisterForm): Observable<RegisterForm> {
     return this._http.post<RegisterForm>(`${this.base_url}usuarios`, usuario)
@@ -43,5 +46,26 @@ export class AuthService {
 
   listaUsuarios(): Observable<RegisterForm[]> {
     return this._http.get<RegisterForm[]>(`${this.base_url}usuarios`);
+  }
+
+  login(usuario: loginForm): Observable<loginForm> {
+    return this._http.post<loginForm>(`${this.base_url}login`, usuario)
+      .pipe(tap((usuario: any) => this._loginUsuario.next(usuario)),
+        // catchError((error: any) => {
+        //   console.log(error);
+        //   let errorMsg: string;
+        //   switch (error.status) {
+        //     case 0: { errorMsg = `Hable con el Equipo de Soporte: ${error.message}`; break; }
+        //     case 400: { errorMsg = `Bad Reques: ${error.message}`; break; }
+        //     case 401: { errorMsg = `Access Denied: ${error.message}`; break; }
+        //     case 403: { errorMsg = `Access Denied: ${error.message}`; break; }
+        //     case 404: { errorMsg = `Not Found: ${error.message}`; break; }
+        //     case 500: { errorMsg = `Internal Server Error: ${error.message}`; break; }
+        //     default: { errorMsg = `Unknown Server Error: ${error.message}`; break; }
+        //   }
+        //   return throwError(errorMsg);
+        // }
+        // )
+      );
   }
 }

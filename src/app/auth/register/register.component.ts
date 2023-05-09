@@ -61,6 +61,7 @@ export class RegisterComponent implements OnInit {
   validarCamporFormulario(): void {
     this.validarContrasena();
     this.registerForm.markAllAsTouched();
+    this.camposRequeridos();
 
     if (this.registerForm.valid) {
       // Realizar acción si el formulario es válido
@@ -68,12 +69,21 @@ export class RegisterComponent implements OnInit {
   }
 
   grabarUsuario(): void {
+
+    const validar = this.registerForm.valid;
+    if (!validar) {
+      this.camposRequeridos();
+      return;
+    }
+
     this._authService.grabarUsuario(this.registerForm.value).subscribe({
       next: (resp: any) => {
 
         console.log(resp);
         if (resp.codeResp === 201) {
           Swal.fire('Usuario creado', resp.msg, 'success');
+          window.localStorage.removeItem('token');
+          localStorage.setItem('token', resp.token);
         } else {
           Swal.fire('Error al crear el usuario, intente más tarde', resp.message, 'error');
           console.warn('Error al crear el usuario');
@@ -84,6 +94,10 @@ export class RegisterComponent implements OnInit {
         Swal.fire('Error', errorEmail, 'error');
       }
     })
+  }
+
+  camposRequeridos(): void {
+    Swal.fire('Campos requeridos', 'Todos los campos son requeridos', 'info');
   }
 
   listaUsuarios(): void {
