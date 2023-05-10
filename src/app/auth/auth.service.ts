@@ -13,6 +13,7 @@ export class AuthService {
 
   private _grabarUsuario: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   private _loginUsuario: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  private _loginGoogle: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   private base_url: string = environment.base_url;
 
   constructor(
@@ -21,6 +22,7 @@ export class AuthService {
 
   get grabarUsuario$(): Observable<any> { return this._grabarUsuario.asObservable() }
   get loginUsuario$(): Observable<any> { return this._loginUsuario.asObservable() }
+  get loginGoogle$(): Observable<any> { return this._loginGoogle.asObservable() }
 
   grabarUsuario(usuario: RegisterForm): Observable<RegisterForm> {
     return this._http.post<RegisterForm>(`${this.base_url}usuarios`, usuario)
@@ -67,5 +69,31 @@ export class AuthService {
         // }
         // )
       );
+  }
+
+  loginGoogle(token: string): Observable<any> {
+    return this._http.post<any>(`${this.base_url}login/google`, { token })
+      .pipe(tap((token: any) => this._loginGoogle.next(token)),
+        // catchError((error: any) => {
+        //   console.log(error);
+        //   let errorMsg: string;
+        //   switch (error.status) {
+        //     case 0: { errorMsg = `Hable con el Equipo de Soporte: ${error.message}`; break; }
+        //     case 400: { errorMsg = `Bad Reques: ${error.message}`; break; }
+        //     case 401: { errorMsg = `Access Denied: ${error.message}`; break; }
+        //     case 403: { errorMsg = `Access Denied: ${error.message}`; break; }
+        //     case 404: { errorMsg = `Not Found: ${error.message}`; break; }
+        //     case 500: { errorMsg = `Internal Server Error: ${error.message}`; break; }
+        //     default: { errorMsg = `Unknown Server Error: ${error.message}`; break; }
+        //   }
+        //   return throwError(errorMsg);
+        // }
+        // )
+      );
+  }
+
+  logout() {
+    localStorage.removeItem('token');
+    
   }
 }

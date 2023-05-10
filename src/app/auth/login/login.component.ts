@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -6,15 +6,20 @@ import Swal from 'sweetalert2'
 
 import { AuthService } from '../auth.service';
 
+declare const google: any;
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, AfterViewInit {
 
   public loginForm: FormGroup;
   isrecoverPassword: boolean = false;
+  
+  @ViewChild('googleBtn') googleBtn!: ElementRef;
+
+  auth2: any;
 
   constructor(
     private _router: Router,
@@ -26,6 +31,25 @@ export class LoginComponent implements OnInit {
     this.construirFormulario();
   }
 
+  ngAfterViewInit(): void {
+    this.googleInit();
+  }
+
+  googleInit(): void {
+    google.accounts.id.initialize({
+      client_id: "",
+      callback: (response: any) => this.handleCredentialResponse(response)
+    });
+
+    google.accounts.id.renderButton(
+      // document.getElementById("buttonDiv"),
+      this.googleBtn.nativeElement,
+      { theme: "outline", size: "large" }  // customization attributes
+    );
+
+    // google.accounts.id.prompt(); // also display the One Tap dialog
+  }
+
   private construirFormulario(): void {
     this.loginForm = this._fb.group({
       email: new FormControl( localStorage.getItem('email' || ''), [Validators.required, Validators.email]),
@@ -33,6 +57,22 @@ export class LoginComponent implements OnInit {
       remenber: new FormControl()
     });
 
+  }
+
+  handleCredentialResponse(response: any): void {
+
+    this._authService.loginGoogle(response.credential).subscribe({
+      next: (resp: any) => {
+        console.log(resp);
+        if (resp.codeResp === 200) {
+          // window.localStorage.removeItem('token');
+          localStorage.setItem('token', resp.token);
+        }
+        this._router.navigateByUrl('/');
+        return Swal.fire('Login', 'Ingreso al sistema correctamente', 'success')
+      },
+      error: (err) => Swal.fire('Error', err.error.msg, 'error'),
+    })
   }
 
   login() {

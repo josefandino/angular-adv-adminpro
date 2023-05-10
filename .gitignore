@@ -10,6 +10,7 @@
 # dependencies
 /node_modules
 /e2e
+/src/enviroments
 
 # profiling files
 chrome-profiler-events*.json
