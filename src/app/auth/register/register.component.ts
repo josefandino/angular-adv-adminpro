@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import Swal from 'sweetalert2'
 
@@ -16,6 +17,7 @@ export class RegisterComponent implements OnInit {
 
   constructor(
     private _fb: FormBuilder,
+    private _router: Router,
     private _authService: AuthService
   ) { }
 
@@ -84,6 +86,8 @@ export class RegisterComponent implements OnInit {
           Swal.fire('Usuario creado', resp.msg, 'success');
           window.localStorage.removeItem('token');
           localStorage.setItem('token', resp.token);
+          localStorage.setItem('isValid', 'false');
+        this._router.navigateByUrl('/');
         } else {
           Swal.fire('Error al crear el usuario, intente más tarde', resp.message, 'error');
           console.warn('Error al crear el usuario');

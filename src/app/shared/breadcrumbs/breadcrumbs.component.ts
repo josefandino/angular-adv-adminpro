@@ -21,7 +21,6 @@ export class BreadcrumbsComponent implements OnDestroy {
     this.tituloSubs$ = this.getDataRoute().subscribe(({ titulo }) => {
       this.titulo = titulo;
       document.title = `AdminPro - ${titulo}`; // Cambia el titulo de la pestaña del navegador
-      console.log(titulo);
     });
   }
   ngOnDestroy(): void {

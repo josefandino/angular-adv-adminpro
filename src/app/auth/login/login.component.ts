@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2'
 
 import { AuthService } from '../auth.service';
+import { UserGoogle } from 'src/app/interfaces/user-google';
 
 declare const google: any;
 @Component({
@@ -37,7 +38,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
   googleInit(): void {
     google.accounts.id.initialize({
-      client_id: "",
+      client_id: "tu_ID_de_cliente",
       callback: (response: any) => this.handleCredentialResponse(response)
     });
 
@@ -46,8 +47,6 @@ export class LoginComponent implements OnInit, AfterViewInit {
       this.googleBtn.nativeElement,
       { theme: "outline", size: "large" }  // customization attributes
     );
-
-    // google.accounts.id.prompt(); // also display the One Tap dialog
   }
 
   private construirFormulario(): void {
@@ -63,10 +62,14 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
     this._authService.loginGoogle(response.credential).subscribe({
       next: (resp: any) => {
-        console.log(resp);
         if (resp.codeResp === 200) {
-          // window.localStorage.removeItem('token');
           localStorage.setItem('token', resp.token);
+          
+          const user: UserGoogle = { nombre: resp.nombre, apellidos: resp.apellidos, email: resp.email, img: resp.picture, token: resp.token };
+          localStorage.setItem('email', user.email);
+          this._authService.setUserGoogle(user);
+          localStorage.setItem('isValid', 'true');
+
         }
         this._router.navigateByUrl('/');
         return Swal.fire('Login', 'Ingreso al sistema correctamente', 'success')
@@ -87,7 +90,6 @@ export class LoginComponent implements OnInit, AfterViewInit {
       next: (resp: any) => {
 
         if (resp.codeResp === 200) {
-          console.log(resp);      
           window.localStorage.removeItem('token');
           localStorage.setItem('token', resp.token);
           
