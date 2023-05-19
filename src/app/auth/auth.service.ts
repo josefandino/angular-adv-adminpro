@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { ChangeDetectorRef, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
@@ -24,6 +24,8 @@ export class AuthService {
   private _xToken: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   private base_url: string = environment.base_url;
 
+  private _changeDetectorRef: ChangeDetectorRef;
+
   constructor(
     private _http: HttpClient,
     private _router: Router,
@@ -38,11 +40,10 @@ export class AuthService {
   get xToken$(): Observable<any> { return this._xToken.asObservable() }
 
   validarToken(): Observable<boolean> {
+
     const token = localStorage.getItem('token') || '';
     return this._http.get(`${this.base_url}login/renew`, {
-      headers: {
-        'x-token': token
-      }
+      headers: { 'x-token': token }
     }).pipe(
       tap((resp: any) => {
         localStorage.setItem('token', resp.token);
@@ -75,7 +76,7 @@ export class AuthService {
       .pipe(tap((token: any) => this._loginGoogle.next(token)));
   }
 
-  logout() {
+  logout(): any {
 
     const correo = localStorage.getItem('email');
     const isValid = localStorage.getItem('isValid');
@@ -89,7 +90,11 @@ export class AuthService {
 
     localStorage.removeItem('token');
     localStorage.removeItem('isValid');
+    localStorage.removeItem('nextRotationAttemptTs');
+    window.localStorage.clear();
     this._router.navigateByUrl('/login');
+    // window.location.reload();
+    this._changeDetectorRef.detectChanges();
 
   }
 }
