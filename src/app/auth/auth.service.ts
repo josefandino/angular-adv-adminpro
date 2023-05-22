@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { ChangeDetectorRef, Injectable } from '@angular/core';
+import { ChangeDetectorRef, Injectable, NgZone, inject } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
@@ -25,10 +25,11 @@ export class AuthService {
   private base_url: string = environment.base_url;
 
   private _changeDetectorRef: ChangeDetectorRef;
-
+  
   constructor(
     private _http: HttpClient,
     private _router: Router,
+    private _ngZone: NgZone,
   ) { }
 
   public setUserGoogle(val: any): void { this._userGoogle.next(val); }
@@ -76,7 +77,7 @@ export class AuthService {
       .pipe(tap((token: any) => this._loginGoogle.next(token)));
   }
 
-  logout(): any {
+  logout(): Observable<any> {
 
     const correo = localStorage.getItem('email');
     const isValid = localStorage.getItem('isValid');
@@ -88,13 +89,8 @@ export class AuthService {
       });      
     }
 
-    localStorage.removeItem('token');
     localStorage.removeItem('isValid');
-    localStorage.removeItem('nextRotationAttemptTs');
-    window.localStorage.clear();
-    this._router.navigateByUrl('/login');
-    // window.location.reload();
-    this._changeDetectorRef.detectChanges();
+    return of(true);
 
   }
 }

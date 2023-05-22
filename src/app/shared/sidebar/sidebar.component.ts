@@ -1,6 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { SidebarService } from '../../services/sidebar.service';
+import { Component, NgZone, OnInit, inject } from '@angular/core';
+import { Router } from '@angular/router';
+
+// Services
 import { AuthService } from 'src/app/auth/auth.service';
+import { SidebarService } from '../../services/sidebar.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -15,16 +18,28 @@ export class SidebarComponent implements OnInit {
   private _auth = inject(AuthService);
 
   constructor(
+    private _ngZone: NgZone,
+    private _router: Router,
     private _sidebarService: SidebarService
   ) {
     this.menuItems = _sidebarService.menu;
     // console.log(this.menuItems)
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): any { }
 
-  logout(): void {
-    return this._auth.logout();
+  logout(): any {
+    return this._auth.logout().subscribe((resp) => {
+
+      localStorage.removeItem('nextRotationAttemptTs');
+      localStorage.removeItem('token');
+      localStorage.removeItem('email');
+      localStorage.removeItem('isValid');
+      this._ngZone.run(() => {
+        this._router.navigateByUrl('/login');
+      });
+      window.location.reload();
+    });
   }
 
 }

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -25,6 +25,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
   constructor(
     private _router: Router,
     private _fb: FormBuilder,
+    private _ngZone: NgZone,
     private _authService: AuthService
   ) { }
 
@@ -71,7 +72,9 @@ export class LoginComponent implements OnInit, AfterViewInit {
           localStorage.setItem('isValid', 'true');
 
         }
-        this._router.navigateByUrl('/');
+        this._ngZone.run(() => {
+          this._router.navigateByUrl('/');
+        });
         return Swal.fire('Login', 'Ingreso al sistema correctamente', 'success')
       },
       error: (err) => Swal.fire('Error', err.error.msg, 'error'),
